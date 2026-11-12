@@ -99,9 +99,9 @@
 			}
 			else if (type === 'for')
 			{
-				b.init = 'i=1';
-				b.cond = esc('i<=10');
-				b.step = 'i++';
+				b.init = 'ifade1';
+				b.cond = 'ifade2';
+				b.step = 'ifade3';
 				b.body = [];
 			}
 			else

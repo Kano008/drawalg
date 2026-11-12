@@ -1,0 +1,8 @@
+
+Selam "https://app.diagrams.net" sitesi yani draw.io veya drawio.com, aynı site olması lazım hepsi.
+Bu sitenin bir uygulama halini istiyorum ama sadece algoritma akış diyagramı çizmek için kullanacağım için bunun için özelleştireceğim bu uygulamayı.
+İstediğim özelleştirmeler:
+1-Kendime özel şekiller istiyorum.(bunları klasör içerisinde customexample/ dizininde fotoğraflar olarak paylaşacağım)
+2- otomatik olarak bir elips içerisinde START ile başlayacak ve aynı şekilde bir elips içerisinde STOP ile bitecek.
+3- Her koyduğum aşamayı otomatik olarak birbiri ile oklar yardımıyla birleştirmesini istiyorum.
+4- Bazı örnek diyagramları examplediagrams/ dizininde paylaşacağım bunları kontrol ederek oluşturmak istediğim diyagramları anlayabilirsin.

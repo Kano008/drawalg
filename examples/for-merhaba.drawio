@@ -1,0 +1,63 @@
+<mxfile host="localhost">
+  <diagram name="Page-1" id="HJnutLWIlLbqtcjs2ny6">
+    <mxGraphModel dx="894" dy="932" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <object drawalg="{&quot;v&quot;:1,&quot;uid&quot;:&quot;q0k97hqew&quot;,&quot;main&quot;:[{&quot;id&quot;:&quot;q0kvihweu&quot;,&quot;type&quot;:&quot;tanimla&quot;,&quot;label&quot;:&quot;i&quot;},{&quot;id&quot;:&quot;q0kw4jsq4&quot;,&quot;type&quot;:&quot;for&quot;,&quot;init&quot;:&quot;i=1&quot;,&quot;cond&quot;:&quot;i&amp;lt;=3&quot;,&quot;step&quot;:&quot;i++&quot;,&quot;body&quot;:[{&quot;id&quot;:&quot;q0kwsb33a&quot;,&quot;type&quot;:&quot;yazdir&quot;,&quot;label&quot;:&quot;\&quot;merhaba\&quot;&quot;}]}]}" id="0">
+          <mxCell />
+        </object>
+        <mxCell id="1" parent="0" />
+        <mxCell id="da-q0k97hqew-start" parent="1" style="ellipse;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;" value="START" vertex="1">
+          <mxGeometry height="80" width="120" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-stop" parent="1" style="ellipse;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;" value="STOP" vertex="1">
+          <mxGeometry height="80" width="120" x="340" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-e-main-0" edge="1" parent="1" source="da-q0k97hqew-start" style="edgeStyle=none;rounded=0;html=1;endFill=1;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;editable=0;bendable=0;endArrow=classic;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;daSeq=main;daIdx=0;" target="da-q0k97hqew-q0kvihweu" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="da-q0k97hqew-q0kvihweu" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;fixedSize=1;size=20;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;" value="i" vertex="1">
+          <mxGeometry height="60" width="120" x="340" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-e-main-1" edge="1" parent="1" source="da-q0k97hqew-q0kvihweu" style="edgeStyle=none;rounded=0;html=1;endFill=1;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;editable=0;bendable=0;endArrow=classic;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;daSeq=main;daIdx=1;" target="da-q0k97hqew-q0kw4jsq4-i" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="da-q0k97hqew-q0kw4jsq4-i" parent="1" style="rounded=0;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;" value="i=1" vertex="1">
+          <mxGeometry height="40" width="80" x="320" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-q0kw4jsq4-s" parent="1" style="rounded=0;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;" value="i++" vertex="1">
+          <mxGeometry height="40" width="80" x="400" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-q0kw4jsq4-c" parent="1" style="rounded=0;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;" value="i&amp;lt;=3" vertex="1">
+          <mxGeometry height="40" width="160" x="320" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-e-q0kw4jsq4-body-0" edge="1" parent="1" source="da-q0k97hqew-q0kw4jsq4-c" style="edgeStyle=none;rounded=0;html=1;endFill=1;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;editable=0;bendable=0;endArrow=classic;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;daSeq=q0kw4jsq4:body;daIdx=0;" target="da-q0k97hqew-q0kwsb33a" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="da-q0k97hqew-e-main-2" edge="1" parent="1" source="da-q0k97hqew-q0kw4jsq4-c" style="edgeStyle=none;rounded=0;html=1;endFill=1;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;editable=0;bendable=0;endArrow=classic;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;daSeq=main;daIdx=2;" target="da-q0k97hqew-stop" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="da-q0k97hqew-q0kwsb33a" parent="1" style="shape=document;size=0.25;boundedLbl=1;html=1;whiteSpace=wrap;fontSize=12;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;" value="&quot;merhaba&quot;" vertex="1">
+          <mxGeometry height="70" width="120" x="520" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="da-q0k97hqew-e-q0kw4jsq4-body-1" edge="1" parent="1" source="da-q0k97hqew-q0kwsb33a" style="edgeStyle=none;rounded=0;html=1;endFill=1;drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;deletable=0;editable=0;bendable=0;endArrow=classic;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;daSeq=q0kw4jsq4:body;daIdx=1;" target="da-q0k97hqew-q0kw4jsq4-s" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="415" />
+              <mxPoint x="670" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

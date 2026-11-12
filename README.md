@@ -11,7 +11,26 @@ draw.io'nun her özelliği (kaydet/aç, PNG/PDF/SVG dışa aktar, sayfalar, geri
 - **Otomatik oklar ve yerleşim**: eklediğin her adım akışa yerleşir, oklar kendiliğinden bağlanır,
   İF'in False/True dalları alta birleşir, FOR'un gövdesi sağda döner
 
-## Kurulum (bir kez)
+## Web demosu
+
+Aynı uygulama tarayıcıda da çalışır (kurulum gerektirmez).
+
+**Yerelde denemek için:**
+
+```bash
+npm run build-web   # web-dist/ klasörünü üretir (draw.io kaynağı yoksa indirir)
+npm run serve-web   # http://localhost:8080
+```
+
+**İnternette yayınlamak için (GitHub Pages, ücretsiz):**
+
+```
+https://kano008.github.io/drawalg/
+```
+
+
+
+## Kurulum
 
 Gerekenler: [Node.js 22.12+](https://nodejs.org) ve git.
 
@@ -35,26 +54,6 @@ npm run dist
 
 macOS'ta çıktı `vendor/drawio-desktop/dist/mac-arm64/drawalg.app` (Intel Mac'te `dist/mac/`) olur; Uygulamalar klasörüne sürükleyebilirsin.
 
-## Web demosu
-
-Aynı uygulama tarayıcıda da çalışır (kurulum gerektirmez).
-
-**Yerelde denemek için:**
-
-```bash
-npm run build-web   # web-dist/ klasörünü üretir (draw.io kaynağı yoksa indirir)
-npm run serve-web   # http://localhost:8080
-```
-
-**İnternette yayınlamak için (GitHub Pages, ücretsiz):**
-
-1. Değişiklikleri GitHub'a push et (`main` dalı).
-2. GitHub'da depo → **Settings → Pages → Build and deployment → Source: GitHub Actions** seç.
-3. **Actions** sekmesinde "Web demosu (GitHub Pages)" iş akışı çalışır; bitince demo
-   `https://<kullanıcı-adı>.github.io/drawalg/` adresinde yayında olur.
-   Sonraki her push'ta demo kendiliğinden güncellenir.
-
-Web sürümünde dosyalar tarayıcı üzerinden bilgisayara kaydedilir/açılır (File → Save / Open).
 
 ## Kullanım
 
@@ -77,19 +76,3 @@ Web sürümünde dosyalar tarayıcı üzerinden bilgisayara kaydedilir/açılır
 - Diğer draw.io kütüphaneleri ilk açılışta gizlenir; sol alttaki **+ More Shapes** ile geri açılabilir.
 
 `examples/` klasöründe `examplediagrams/` içindeki örneklerin drawalg ile çizilmiş halleri var (File → Open ile açılabilir).
-
-## Proje yapısı
-
-```
-plugin/drawalg.js     draw.io eklentisi (palet, START/STOP, otomatik bağlama, yerleşim)
-app/drawalg-main.js   Electron giriş noktası: draw.io'yu başlatır, eklentiyi enjekte eder
-app/drawalg-pre.js    Resmi draw.io otomatik güncellemesini kapatır
-scripts/              setup / start / dist / build-web / serve-web betikleri
-.github/workflows/    GitHub Pages yayın iş akışı
-examples/             örnek .drawio dosyaları
-vendor/               (git'e girmez) indirilen draw.io masaüstü kaynağı
-web-dist/             (git'e girmez) derlenmiş web demosu
-```
-
-Akışın yapısı her sayfanın kök hücresinde `drawalg` özniteliği olarak JSON biçiminde saklanır,
-böylece kaydedip yeniden açtığında düzenlemeye kaldığın yerden devam edersin.

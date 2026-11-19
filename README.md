@@ -6,10 +6,10 @@ drawalg, resmi açık kaynak **draw.io masaüstü uygulamasının** üzerine kur
 draw.io'nun her özelliği (kaydet/aç, PNG/PDF/SVG dışa aktar, sayfalar, geri al…) aynen çalışır;
 üstüne algoritma akış diyagramı için şunlar eklenir:
 
-- **Algoritma paleti**: TANIMLA, OKU, İŞLEM, YAZDIR, İF, FOR
+- **Algoritma paleti**: TANIMLA, OKU, İŞLEM, YAZDIR, İF, FOR, WHILE
 - **Otomatik START / STOP**: her yeni sayfa elips içinde START ile başlar, STOP ile biter
 - **Otomatik oklar ve yerleşim**: eklediğin her adım akışa yerleşir, oklar kendiliğinden bağlanır,
-  İF'in False/True dalları alta birleşir, FOR'un gövdesi sağda döner
+  İF'in False/True dalları alta birleşir, FOR ve WHILE'ın gövdesi sağda döner
 
 ## Web demosu
 
@@ -66,13 +66,14 @@ macOS'ta çıktı `vendor/drawio-desktop/dist/mac-arm64/drawalg.app` (Intel Mac'
 | Dalgalı alt kenarlı belge | YAZDIR — ekrana yazdırma |
 | Baklava | İF — karar (False solda, True sağda) |
 | Üç bölmeli kutu | FOR — döngü `for (ifade1; ifade2; ifade3)`: üst sol başlangıç, üst sağ artış, alt koşul |
+| Baklava + geri dönen ok | WHILE — döngü: koşul True oldukça sağdaki gövde çalışır, False ile aşağı çıkılır |
 
 - **Tıkla**: paletteki şekle tıklayınca seçili şeklin hemen altına eklenir. Hiçbir şey seçili değilse STOP'tan önceye eklenir.
 - **Oka ekle**: bir oku seçip şekle tıklarsan şekil o okun yerine girer. Paletten sürükleyip bir okun üzerine de bırakabilirsin.
-- **İF / FOR içine ekleme**: False ya da True okunu (veya FOR gövdesinin okunu) seçip şekle tıkla.
+- **İF / FOR / WHILE içine ekleme**: False ya da True okunu (veya döngü gövdesinin okunu) seçip şekle tıkla.
 - **Yazı**: yeni eklenen şekil seçili gelir; doğrudan yazmaya başla. Sonradan değiştirmek için çift tıkla. Yazı uzadıkça şekil genişler.
-- **Silme**: şekli seç, Delete. Oklar kendiliğinden yeniden bağlanır. İF/FOR silinince içindekiler de silinir (Ctrl/Cmd+Z ile geri alınır).
-- Şekiller elle taşınamaz; yerleşimi drawalg yapar. Renk, yazı tipi gibi biçimlendirmeler serbesttir.
+- **Silme**: şekli seç, Delete. Oklar kendiliğinden yeniden bağlanır. İF/FOR/WHILE silinince içindekiler de silinir (Ctrl/Cmd+Z ile geri alınır).
+- Şekiller elle taşınamaz; yerleşimi drawalg yapar. Varsayılan çizgi kalınlığı 2, yazı boyutu 14'tür; renk, kalınlık, yazı tipi gibi elle yaptığın biçimlendirmeler korunur.
 - Diğer draw.io kütüphaneleri ilk açılışta gizlenir; sol alttaki **+ More Shapes** ile geri açılabilir.
 
 `examples/` klasöründe `examplediagrams/` içindeki örneklerin drawalg ile çizilmiş halleri var (File → Open ile açılabilir).

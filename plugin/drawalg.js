@@ -38,13 +38,14 @@
 		// Sabitler ve stiller
 		// ------------------------------------------------------------------
 		var GAP = 40;          // ardışık adımlar arasındaki dikey boşluk
-		var FONT = 12;
+		var FONT = 14;
 		var X0 = 400;          // akışın dikey ekseni
 		var Y0 = 40;           // START'ın üst kenarı
 		var PFX = 'da-';
 
-		var LOCK = 'drawalg=1;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;';
-		var BASE = 'html=1;whiteSpace=wrap;fontSize=' + FONT + ';' + LOCK;
+		var LOCK = 'drawalg=1;drawalgV=2;movable=0;resizable=0;rotatable=0;connectable=0;cloneable=0;';
+		var STROKE = 2;         // çerçeve ve ok kalınlığı
+		var BASE = 'html=1;whiteSpace=wrap;strokeWidth=' + STROKE + ';fontSize=' + FONT + ';' + LOCK;
 		var NODELETE = 'deletable=0;';
 
 		var STYLE = {
@@ -60,7 +61,7 @@
 				LOCK + NODELETE + 'editable=0;selectable=0;',
 			merge: 'shape=waypoint;size=1;fillColor=none;strokeColor=none;perimeter=centerPerimeter;' +
 				LOCK + NODELETE + 'editable=0;selectable=0;pointerEvents=0;',
-			edge: 'edgeStyle=none;rounded=0;html=1;endFill=1;' + LOCK + NODELETE + 'editable=0;bendable=0;'
+			edge: 'edgeStyle=none;rounded=0;html=1;endFill=1;strokeWidth=' + STROKE + ';' + LOCK + NODELETE + 'editable=0;bendable=0;'
 		};
 
 		var SIMPLE = {tanimla: 1, oku: 1, islem: 1, yazdir: 1};
@@ -71,7 +72,8 @@
 			{type: 'islem', title: 'İŞLEM', hint: 'İşlem / atama'},
 			{type: 'yazdir', title: 'YAZDIR', hint: 'Ekrana yazdırma'},
 			{type: 'if', title: 'İF', hint: 'Karar — False solda, True sağda'},
-			{type: 'for', title: 'FOR', hint: 'Döngü — for (ifade1; ifade2; ifade3)'}
+			{type: 'for', title: 'FOR', hint: 'Döngü — for (ifade1; ifade2; ifade3)'},
+			{type: 'while', title: 'WHILE', hint: 'Döngü — koşul doğru oldukça tekrarla (True sağda)'}
 		];
 
 		// ------------------------------------------------------------------
@@ -96,6 +98,11 @@
 				b.label = esc('koşul');
 				b.no = [];
 				b.yes = [];
+			}
+			else if (type === 'while')
+			{
+				b.label = esc('koşul');
+				b.body = [];
 			}
 			else if (type === 'for')
 			{
@@ -265,7 +272,7 @@
 						return {block: b, seq: seq, key: key, idx: i};
 					}
 
-					var kids = b.type === 'if' ? ['no', 'yes'] : (b.type === 'for' ? ['body'] : []);
+					var kids = b.type === 'if' ? ['no', 'yes'] : ((b.type === 'for' || b.type === 'while') ? ['body'] : []);
 
 					for (var k = 0; k < kids.length; k++)
 					{
@@ -292,6 +299,10 @@
 			if (b.type === 'if')
 			{
 				return {main: p, merge: p + '-m', lf: p + '-lf', lt: p + '-lt'};
+			}
+			else if (b.type === 'while')
+			{
+				return {main: p, junction: p + '-j', jedge: p + '-je', lf: p + '-lf', lt: p + '-lt'};
 			}
 			else if (b.type === 'for')
 			{
@@ -331,6 +342,14 @@
 						map[c.lt] = {block: b.id};
 						walk(b.no);
 						walk(b.yes);
+					}
+					else if (b.type === 'while')
+					{
+						map[c.main] = {block: b.id, field: 'label'};
+						map[c.junction] = {block: b.id};
+						map[c.lf] = {block: b.id};
+						map[c.lt] = {block: b.id};
+						walk(b.body);
 					}
 					else if (b.type === 'for')
 					{
@@ -376,7 +395,7 @@
 				w = Math.max(120, t.w + 30);
 				h = Math.max(70, t.h + 45);
 			}
-			else if (b.type === 'if')
+			else if (b.type === 'if' || b.type === 'while')
 			{
 				w = Math.max(140, Math.round(t.w * 1.7) + 40);
 				h = Math.max(80, t.h * 2 + 30);
@@ -426,6 +445,21 @@
 
 				return {L: xl + no.L, R: xr + yes.R, H: mergeY, d: d, no: no, yes: yes,
 					xl: xl, xr: xr, top: top, mergeY: mergeY};
+			}
+			else if (b.type === 'while')
+			{
+				var wd = sizeOf(m, b);
+				var wb = measureSeq(m, b.body);
+				var JH = 30;                                   // giriş birleşme noktası ile baklava arası
+				var wbx = Math.max(wd.w / 2 + 60, wb.n > 0 ? wb.L + 40 : 0);
+				var wTop = JH + wd.h + 40;                     // gövdenin üst kenarı
+				var wLast = wb.n > 0 ? b.body[b.body.length - 1] : null;
+				var wLastSimple = wLast == null || SIMPLE[wLast.type];
+				var wLoopX = wb.n > 0 ? wbx + wb.R + 30 : wd.w / 2 + 60;
+				var wH = wb.n > 0 ? wTop + wb.H + (wLastSimple ? 10 : 30) : JH + wd.h;
+
+				return {L: Math.max(wd.w / 2, 60), R: wLoopX + 10, H: wH, d: wd, body: wb, JH: JH,
+					bx: wbx, bodyTop: wTop, loopX: wLoopX};
 			}
 			else if (b.type === 'for')
 			{
@@ -488,7 +522,7 @@
 			}
 
 			// Bir blok yerleştirir; giriş ve çıkış bağlantı noktalarını döndürür
-			function emitBlock(b, mb, cx, y)
+			function emitBlock(b, mb, cx, y, key, idx)
 			{
 				var c = ids(m, b);
 
@@ -531,6 +565,33 @@
 						exit: {id: c.merge, cx: 0.5, cy: 0.5, x: cx, y: my, bottom: my}
 					};
 				}
+				else if (b.type === 'while')
+				{
+					var wd = mb.d;
+					var dy = y + mb.JH;
+					var wcy = dy + wd.h / 2;
+
+					// Giriş birleşme noktası (döngüden dönen ok buraya gelir)
+					vtx(c.junction, STYLE.merge, '', cx - 1, y - 1, 2, 2);
+					vtx(c.main, STYLE['if'], b.label, cx - wd.w / 2, dy, wd.w, wd.h);
+					edge(c.jedge, STYLE.edge + 'endArrow=classic;' +
+						anchorStyle({cx: 0.5, cy: 0.5}, {cx: 0.5, cy: 0}) +
+						'daSeq=' + key + ';daIdx=' + idx + ';', c.junction, c.main, []);
+
+					// True (sağ) ve False (alt) yazıları
+					var wlw = 50, wlh = 20;
+					vtx(c.lt, STYLE.label, 'True', cx + (mb.bx + wd.w / 2) / 2 - wlw / 2, wcy - wlh - 2, wlw, wlh);
+					vtx(c.lf, STYLE.label + 'align=left;', 'False', cx + 8, dy + wd.h + 4, wlw, wlh);
+
+					emitSeq(b.body, mb.body, b.id + ':body', cx + mb.bx, y + mb.bodyTop,
+						{id: c.main, cx: 1, cy: 0.5, x: cx + wd.w / 2, y: wcy},
+						{id: c.junction, cx: 0.5, cy: 0.5, x: cx, y: y}, 'loop', cx + mb.loopX);
+
+					return {
+						entry: {id: c.junction, cx: 0.5, cy: 0.5, x: cx, y: y, noArrow: true},
+						exit: {id: c.main, cx: 0.5, cy: 1, x: cx, y: dy + wd.h, bottom: y + mb.H}
+					};
+				}
 				else if (b.type === 'for')
 				{
 					var w1 = mb.w1, w2 = mb.w2;
@@ -564,7 +625,7 @@
 				for (var i = 0; i <= seq.length; i++)
 				{
 					var last = (i === seq.length);
-					var r = last ? null : emitBlock(seq[i], ms.items[i], ax, yc);
+					var r = last ? null : emitBlock(seq[i], ms.items[i], ax, yc, key, i);
 					var trg = last ? tail : r.entry;
 					var src = prev;
 					var pts = [];
@@ -599,6 +660,11 @@
 							pts.push({x: ax, y: trg.y});
 							arrow = false;
 						}
+					}
+
+					if (trg.noArrow)
+					{
+						arrow = false;
 					}
 
 					slotEdge(key, i, src, trg, pts, arrow);
@@ -654,6 +720,40 @@
 			return true;
 		}
 
+		// Kullanıcının elle yaptığı biçimlendirmeyi (renk, kalınlık, yazı) koru;
+		// yapısal anahtarları (şekil, kilitler, bağlantı noktaları) güncelle.
+		var VISUAL = {strokeWidth: 1, fontSize: 1, fillColor: 1, strokeColor: 1, fontColor: 1, fontStyle: 1,
+			fontFamily: 1, gradientColor: 1, opacity: 1, shadow: 1, dashed: 1, sketch: 1, rounded: 1, align: 1};
+
+		function mergeStyle(old, spec)
+		{
+			// Eski sürümle çizilmiş hücre: yeni varsayılanları bir kez uygula
+			if (old == null || old.indexOf('drawalgV=2') < 0)
+			{
+				return spec;
+			}
+
+			var result = old;
+			var parts = spec.split(';');
+
+			for (var i = 0; i < parts.length; i++)
+			{
+				var eq = parts[i].indexOf('=');
+
+				if (eq > 0)
+				{
+					var k = parts[i].substring(0, eq);
+
+					if (!VISUAL[k])
+					{
+						result = mxUtils.setStyle(result, k, parts[i].substring(eq + 1));
+					}
+				}
+			}
+
+			return result;
+		}
+
 		function render(m)
 		{
 			var specs = layout(m);
@@ -701,9 +801,11 @@
 						}
 						else
 						{
-							if (cell.style !== s.style)
+							var ms = mergeStyle(cell.style, s.style);
+
+							if (cell.style !== ms)
 							{
-								model.setStyle(cell, s.style);
+								model.setStyle(cell, ms);
 							}
 
 							var og = model.getGeometry(cell);
@@ -737,9 +839,11 @@
 						}
 						else
 						{
-							if (cell.style !== s.style)
+							var ms = mergeStyle(cell.style, s.style);
+
+							if (cell.style !== ms)
 							{
-								model.setStyle(cell, s.style);
+								model.setStyle(cell, ms);
 							}
 
 							var g = model.getGeometry(cell);
@@ -1198,7 +1302,8 @@
 			islem: '<rect x="3" y="8" width="42" height="24"/>',
 			yazdir: '<path d="M3 5 H45 V30 C36 22 26 40 14 33 C9 30 6 30 3 32 Z"/>',
 			'if': '<polygon points="24,3 45,20 24,37 3,20"/>',
-			'for': '<rect x="3" y="6" width="42" height="28"/><line x1="3" y1="20" x2="45" y2="20"/><line x1="24" y1="6" x2="24" y2="20"/>'
+			'for': '<rect x="3" y="6" width="42" height="28"/><line x1="3" y1="20" x2="45" y2="20"/><line x1="24" y1="6" x2="24" y2="20"/>',
+			'while': '<polygon points="18,8 32,19 18,30 4,19"/><polyline points="32,19 40,19 40,4 18,4 18,8"/><line x1="18" y1="30" x2="18" y2="38"/>'
 		};
 
 		function createIcon(type)
@@ -1214,8 +1319,8 @@
 			var b = newBlock(type);
 			var m = {uid: 'x', main: [b]};
 			var mb = measureBlock(m, b);
-			var w = (type === 'if' || type === 'for') ? (type === 'for' ? 160 : mb.d.w) : mb.s.w;
-			var h = (type === 'if') ? mb.d.h : ((type === 'for') ? 80 : mb.s.h);
+			var w = (type === 'for') ? 160 : ((mb.d != null) ? mb.d.w : mb.s.w);
+			var h = (type === 'for') ? 80 : ((mb.d != null) ? mb.d.h : mb.s.h);
 			var prev = document.createElement('div');
 			prev.style.border = '1px dashed #29b6f2';
 			prev.style.width = w + 'px';
@@ -1276,7 +1381,7 @@
 			help.innerHTML =
 				'<b>Tıkla:</b> seçili şeklin altına ya da seçili oka ekler (seçim yoksa STOP\'tan önceye).<br>' +
 				'<b>Sürükle:</b> bir okun üzerine bırak.<br>' +
-				'<b>İF / FOR içine eklemek:</b> önce False/True ya da FOR gövdesi okunu seç.<br>' +
+				'<b>İF / FOR / WHILE içine eklemek:</b> önce False/True ya da döngü gövdesinin okunu seç.<br>' +
 				'<b>Yazmak:</b> şekil seçiliyken yazmaya başla. <b>Silmek:</b> Delete.';
 			div.appendChild(help);
 		}

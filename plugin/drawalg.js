@@ -694,6 +694,15 @@
 
 			vtx(tid, STYLE.stop, 'STOP', X0 - 60, yStop, 120, 80);
 
+			// Sayfanın çizgi kalınlığı (yalnızca yeni hücrelerde kullanılır;
+			// var olanlar render sırasında korunur, toplu değişim setStroke ile yapılır)
+			var sw = strokeOf(m);
+
+			for (var k = 0; k < out.length; k++)
+			{
+				out[k].style = out[k].style.replace(/strokeWidth=[\d.]+/, 'strokeWidth=' + sw);
+			}
+
 			return out;
 		}
 
@@ -933,7 +942,7 @@
 				var file = (typeof ui.getCurrentFile === 'function') ? ui.getCurrentFile() : null;
 				var wasModified = file != null && typeof file.isModified === 'function' && file.isModified();
 
-				m = {v: 1, uid: newId(), main: []};
+				m = {v: 1, uid: newId(), main: [], stroke: defaultStroke()};
 				render(m);
 
 				// START/STOP eklemesi geri alınamasın
@@ -982,6 +991,226 @@
 					}
 				}
 			}, 0);
+		}
+
+		// ------------------------------------------------------------------
+		// Toplu çizgi kalınlığı
+		// ------------------------------------------------------------------
+		var STROKES = [0.5, 1, 1.5, 2, 3, 4, 5];
+		var strokeInputs = [];
+
+		function defaultStroke()
+		{
+			try
+			{
+				var v = parseFloat(localStorage.getItem('drawalg.stroke'));
+
+				if (!isNaN(v) && v > 0)
+				{
+					return v;
+				}
+			}
+			catch (e)
+			{
+				// yoksay
+			}
+
+			return STROKE;
+		}
+
+		function strokeOf(m)
+		{
+			return (m != null && m.stroke > 0) ? m.stroke : STROKE;
+		}
+
+		function setStroke(value)
+		{
+			value = parseFloat(value);
+
+			if (isNaN(value) || value <= 0 || !graph.isEnabled())
+			{
+				return;
+			}
+
+			try
+			{
+				localStorage.setItem('drawalg.stroke', String(value));
+			}
+			catch (e)
+			{
+				// yoksay
+			}
+
+			var m = readModel();
+
+			if (m == null)
+			{
+				return;
+			}
+
+			var cells = [];
+
+			for (var id in model.cells)
+			{
+				var c = model.cells[id];
+
+				if (isDa(c) && c.style != null && c.style.indexOf('strokeWidth=') >= 0)
+				{
+					cells.push(c);
+				}
+			}
+
+			m.stroke = value;
+			model.beginUpdate();
+
+			try
+			{
+				graph.setCellStyles('strokeWidth', value, cells);
+				writeModel(m);
+			}
+			finally
+			{
+				model.endUpdate();
+			}
+		}
+
+		function formatStroke(v)
+		{
+			return (Math.round(v * 100) / 100) + ' pt';
+		}
+
+		function syncControls()
+		{
+			var m = readModel();
+			var v = formatStroke(m != null ? strokeOf(m) : defaultStroke());
+
+			for (var i = 0; i < strokeInputs.length; i++)
+			{
+				// Kullanıcı yazarken değeri ezme
+				if (strokeInputs[i] !== document.activeElement && strokeInputs[i].value !== v)
+				{
+					strokeInputs[i].value = v;
+				}
+			}
+		}
+
+		// Geri al / sayfa değişimi sonrası kutuyu güncel tut
+		model.addListener(mxEvent.CHANGE, syncControls);
+		ui.editor.addListener('pageSelected', function ()
+		{
+			setTimeout(syncControls, 10);
+		});
+
+		// draw.io'nun sağ paneldeki (ör. Kılavuz) sayı kutusuna benzer kontrol:
+		// elle değer yazılabilir, oklarla artırılır, ▾ ile hazır değer seçilir
+		function createStrokeControl()
+		{
+			var row = document.createElement('div');
+			row.style.cssText = 'display:flex;align-items:center;font-size:12px;padding:10px 4px 2px 6px;';
+
+			var lbl = document.createElement('span');
+			lbl.style.cssText = 'flex:1;white-space:nowrap;';
+			mxUtils.write(lbl, 'Çizgi kalınlığı');
+			row.appendChild(lbl);
+
+			var input = document.createElement('input');
+			input.setAttribute('type', 'text');
+			input.setAttribute('title', 'Bu sayfadaki bütün şekil ve okların çizgi kalınlığı (ör. 0.1, 1.5, 3)');
+			input.style.cssText = 'box-sizing:border-box;width:58px;height:24px;border-radius:4px;' +
+				'text-align:right;font-size:12px;padding:0 4px;margin:0;';
+
+			function update(evt)
+			{
+				var v = parseFloat(String(input.value).replace(',', '.'));
+
+				if (!isNaN(v))
+				{
+					v = Math.max(0.1, Math.min(20, Math.round(v * 100) / 100));
+					var m = readModel();
+
+					if (m == null || strokeOf(m) !== v)
+					{
+						setStroke(v);
+					}
+				}
+
+				input.value = formatStroke(strokeOf(readModel()));
+
+				if (evt != null)
+				{
+					mxEvent.consume(evt);
+				}
+			}
+
+			mxEvent.addListener(input, 'change', update);
+			mxEvent.addListener(input, 'blur', update);
+			mxEvent.addListener(input, 'keydown', function (evt)
+			{
+				if (evt.keyCode == 13)
+				{
+					update(evt);
+					graph.container.focus();
+				}
+				else if (evt.keyCode == 27)
+				{
+					input.value = formatStroke(strokeOf(readModel()));
+					graph.container.focus();
+					mxEvent.consume(evt);
+				}
+			});
+
+			row.appendChild(input);
+
+			// Yukarı/aşağı ok düğmeleri (draw.io'nun kendi bileşeni)
+			try
+			{
+				var stepper = BaseFormatPanel.prototype.createStepper.call({}, input, update, 0.5, null, null, true);
+				stepper.style.position = 'relative';
+				stepper.style.left = '';
+				stepper.style.marginLeft = '2px';
+				row.appendChild(stepper);
+			}
+			catch (e)
+			{
+				// eski sürümlerde stepper yoksa yalnızca kutu kalır
+			}
+
+			// Hazır değerler
+			var presets = document.createElement('div');
+			presets.className = 'geBtn';
+			presets.setAttribute('title', 'Hazır değerler');
+			presets.style.cssText = 'box-sizing:border-box;min-width:0;width:20px;height:24px;padding:0;margin:0 0 0 2px;' +
+				'display:flex;align-items:center;justify-content:center;cursor:pointer;' +
+				'background-image:url(' + Editor.arrowDownImage + ');background-repeat:no-repeat;' +
+				'background-position:center;background-size:18px;';
+
+			mxEvent.addListener(presets, 'click', function (evt)
+			{
+				var r = presets.getBoundingClientRect();
+
+				ui.showPopupMenu(function (menu)
+				{
+					for (var i = 0; i < STROKES.length; i++)
+					{
+						(function (v)
+						{
+							menu.addItem(formatStroke(v), null, function ()
+							{
+								setStroke(v);
+								syncControls();
+							});
+						})(STROKES[i]);
+					}
+				}, r.left, r.bottom + 2, evt);
+
+				mxEvent.consume(evt);
+			});
+
+			row.appendChild(presets);
+			strokeInputs.push(input);
+			syncControls();
+
+			return row;
 		}
 
 		ui.editor.addListener('fileLoaded', ensureLater);
@@ -1375,6 +1604,8 @@
 			{
 				div.appendChild(createItem(TYPES[i]));
 			}
+
+			div.appendChild(createStrokeControl());
 
 			var help = document.createElement('div');
 			help.style.cssText = 'font-size:11px;line-height:1.45;opacity:0.75;padding:6px 4px 0 4px;white-space:normal;';
